@@ -64,6 +64,34 @@ struct cos_fn
     }
 };
 
+struct atan2_fn
+{
+    template <class T>
+    auto operator ()(T y, T x) const -> decltype(std::atan2(y, x))
+    {
+        return std::atan2(y, x);
+    }
+};
+
+struct asin_fn
+{
+    template <class T>
+    auto operator ()(T x) const -> decltype(std::asin(x))
+    {
+        return std::asin(x);
+    }
+};
+
+struct acos_fn
+{
+    template <class T>
+    auto operator ()(T x) const -> decltype(std::acos(x))
+    {
+        return std::acos(x);
+    }
+};
+
+
 }  // namespace detail
 
 static constexpr inline auto sqrt = detail::sqrt_fn{};
@@ -72,6 +100,9 @@ static constexpr inline auto floor = detail::floor_fn{};
 static constexpr inline auto ceil = detail::ceil_fn{};
 static constexpr inline auto sin = detail::sin_fn{};
 static constexpr inline auto cos = detail::cos_fn{};
+static constexpr inline auto atans = detail::atan2_fn{};
+static constexpr inline auto asin = detail::asin_fn{};
+static constexpr inline auto acos = detail::acos_fn{};
 
 }  // namespace mat
 }  // namespace ferrugo

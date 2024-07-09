@@ -120,6 +120,23 @@ struct rejection_fn
 
 static constexpr inline auto rejection = rejection_fn{};
 
+struct angle_fn
+{
+    template <class T>
+    auto operator ()(const vector_2d<T>& lhs, const vector_2d<T>& rhs) const -> decltype(atan2(cross(lhs, rhs), dot(lhs, rhs)))
+    {
+        return atan2(cross(lhs, rhs), dot(lhs, rhs));
+    }
+
+    template <class T>
+    auto operator ()(const vector_3d<T>& lhs, const vector_3d<T>& rhs) const -> decltype(acos(dot(lhs, rhs) / (length(lhs) * length(rhs))))
+    {
+        return acos(dot(lhs, rhs) / (length(lhs) * length(rhs)));
+    }
+};
+
+static constexpr inline auto angle = angle_fn{};
+
 
 }  // namespace detail
 
@@ -131,6 +148,7 @@ using detail::distance;
 using detail::cross;
 using detail::projection;
 using detail::rejection;
+using detail::angle;
 
 }  // namespace mat
 }  // namespace ferrugo

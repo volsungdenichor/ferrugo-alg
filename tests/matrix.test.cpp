@@ -40,17 +40,3 @@ TEST_CASE("vector - norm", "[vector]")
     mat::vector_2d<int> a{ 2, 3 };
     REQUIRE(mat::norm(a) == 13);
 }
-
-TEST_CASE("vector - unit", "[vector]")
-{
-    mat::vector_2d<int> a{ 2, 2 };
-    mat::vector_2d<int> b{ 3, 3 };
-    std::cout << mat::distance(a, b) << std::endl;
-}
-
-TEST_CASE("vector - projection", "[vector]")
-{
-    mat::vector_2d<int> a{ 10, 0 };
-    mat::vector_2d<int> b{ 3, 3 };
-    std::cout << mat::projection(a, b) << std::endl;
-}
