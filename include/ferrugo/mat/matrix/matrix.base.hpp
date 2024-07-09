@@ -53,6 +53,12 @@ public:
         std::copy(std::begin(other), std::end(other), begin());
     }
 
+    template <class U>
+    constexpr matrix(const matrix<U, R, C>& other)
+    {
+        std::transform(std::begin(other), std::end(other), begin(), [](U v) -> T { return static_cast<T>(v); });
+    }
+
     constexpr matrix& operator=(matrix other)
     {
         std::swap(m_data, other.m_data);
@@ -114,31 +120,24 @@ public:
         return m_data.end();
     }
 
-    template <std::size_t Index, std::size_t R_ = R, core::require<(R_ == 1 && Index < C)> = 0>
-    const_reference get() const
-    {
-        return std::get<Index>(m_data);
-    }
-
     template <std::size_t R_ = R, std::size_t C_ = C, core::require<(R_ == 1 && C_ >= 1)> = 0>
-    const_reference x() const
+    constexpr const_reference x() const
     {
-        return get<0>();
+        return std::get<0>(m_data);
     }
 
     template <std::size_t R_ = R, std::size_t C_ = C, core::require<(R_ == 1 && C_ >= 2)> = 0>
-    const_reference y() const
+    constexpr const_reference y() const
     {
-        return get<1>();
+        return std::get<1>(m_data);
     }
 
     template <std::size_t R_ = R, std::size_t C_ = C, core::require<(R_ == 1 && C_ >= 3)> = 0>
-    const_reference y() const
+    constexpr const_reference y() const
     {
-        return get<2>();
+        return std::get<2>(m_data);
     }
 
-private:
     data_type m_data;
 };
 
@@ -207,6 +206,12 @@ std::ostream& operator<<(std::ostream& os, const vector<T, D>& item)
     return os;
 }
 
+template <std::size_t Index, class T, std::size_t R, std::size_t C>
+constexpr auto get(const matrix<T, R, C>& m) -> typename matrix<T, R, C>::const_reference
+{
+    return std::get<Index>(m.m_data);
+}
+
 }  // namespace mat
 }  // namespace ferrugo
 
@@ -221,19 +226,13 @@ struct tuple_size<::ferrugo::mat::vector<T, D>> : std::integral_constant<size_t,
 template <size_t Index, class T, size_t D>
 struct tuple_element<Index, ::ferrugo::mat::vector<T, D>>
 {
-    using type = decltype(std::declval<::ferrugo::mat::vector<T, D>>().template get<Index>());
+    using type = decltype(::ferrugo::mat::get<Index>(std::declval<::ferrugo::mat::vector<T, D>>()));
 };
 
 template <size_t Index, class T, size_t D>
 const auto& get(const ::ferrugo::mat::vector<T, D>& item)
 {
-    return item.template get<Index>();
-};
-
-template <size_t Index, class T, size_t D>
-auto& get(::ferrugo::mat::vector<T, D>& item)
-{
-    return item.template get<Index>();
+    return ::ferrugo::mat::get<Index>(item);
 };
 
 }  // namespace std
