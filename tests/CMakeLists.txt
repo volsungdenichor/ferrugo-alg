@@ -1,4 +1,4 @@
-set(TARGET_NAME ferrugo-mat-tests)
+set(TARGET_NAME ferrugo-alg-tests)
 
 set(UNIT_TEST_SOURCE_LIST
     matrix.test.cpp

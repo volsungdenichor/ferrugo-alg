@@ -1,13 +1,13 @@
 #pragma once
 
-#include <ferrugo/mat/math.hpp>
-#include <ferrugo/mat/matrix/matrix.base.hpp>
+#include <ferrugo/alg/math.hpp>
+#include <ferrugo/alg/matrix/matrix.base.hpp>
 #include <functional>
 #include <numeric>
 
 namespace ferrugo
 {
-namespace mat
+namespace alg
 {
 
 namespace detail
@@ -150,5 +150,5 @@ using detail::projection;
 using detail::rejection;
 using detail::angle;
 
-}  // namespace mat
+}  // namespace alg
 }  // namespace ferrugo

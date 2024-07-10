@@ -4,7 +4,7 @@
 
 namespace ferrugo
 {
-namespace mat
+namespace alg
 {
 
 namespace detail
@@ -104,5 +104,5 @@ static constexpr inline auto atans = detail::atan2_fn{};
 static constexpr inline auto asin = detail::asin_fn{};
 static constexpr inline auto acos = detail::acos_fn{};
 
-}  // namespace mat
+}  // namespace alg
 }  // namespace ferrugo

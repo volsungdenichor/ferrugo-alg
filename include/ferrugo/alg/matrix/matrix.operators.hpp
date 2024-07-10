@@ -1,11 +1,11 @@
 #pragma once
 
-#include <ferrugo/mat/matrix/matrix.base.hpp>
+#include <ferrugo/alg/matrix/matrix.base.hpp>
 #include <functional>
 
 namespace ferrugo
 {
-namespace mat
+namespace alg
 {
 
 template <class T, class U, std::size_t R, std::size_t C>
@@ -164,5 +164,5 @@ auto operator*=(vector<T, D>& lhs, const square_matrix<U, D + 1>& rhs) -> vector
     return lhs = lhs * rhs;
 }
 
-}  // namespace mat
+}  // namespace alg
 }  // namespace ferrugo

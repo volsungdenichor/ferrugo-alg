@@ -6,7 +6,7 @@
 
 namespace ferrugo
 {
-namespace mat
+namespace alg
 {
 
 namespace detail
@@ -212,27 +212,27 @@ constexpr auto get(const matrix<T, R, C>& m) -> typename matrix<T, R, C>::const_
     return std::get<Index>(m.m_data);
 }
 
-}  // namespace mat
+}  // namespace alg
 }  // namespace ferrugo
 
 namespace std
 {
 
 template <class T, size_t D>
-struct tuple_size<::ferrugo::mat::vector<T, D>> : std::integral_constant<size_t, D>
+struct tuple_size<::ferrugo::alg::vector<T, D>> : std::integral_constant<size_t, D>
 {
 };
 
 template <size_t Index, class T, size_t D>
-struct tuple_element<Index, ::ferrugo::mat::vector<T, D>>
+struct tuple_element<Index, ::ferrugo::alg::vector<T, D>>
 {
-    using type = decltype(::ferrugo::mat::get<Index>(std::declval<::ferrugo::mat::vector<T, D>>()));
+    using type = decltype(::ferrugo::alg::get<Index>(std::declval<::ferrugo::alg::vector<T, D>>()));
 };
 
 template <size_t Index, class T, size_t D>
-const auto& get(const ::ferrugo::mat::vector<T, D>& item)
+const auto& get(const ::ferrugo::alg::vector<T, D>& item)
 {
-    return ::ferrugo::mat::get<Index>(item);
+    return ::ferrugo::alg::get<Index>(item);
 };
 
 }  // namespace std
