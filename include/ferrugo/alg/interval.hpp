@@ -1,18 +1,18 @@
 #pragma once
 
 #include <functional>
+#include <iostream>
 
 namespace ferrugo
 {
 namespace alg
 {
 template <class T>
-struct interval
+struct interval : std::array<T, 2>
 {
-    T lower;
-    T upper;
+    using base_t = std::array<T, 2>;
 
-    interval(T lo, T up) : lower(lo), upper(up)
+    interval(T lo, T up) : base_t{ lo, up }
     {
     }
 
@@ -20,21 +20,16 @@ struct interval
     {
     }
 
-    bool empty() const
+    friend std::ostream& operator<<(std::ostream& os, const interval& item)
     {
-        return lower == upper;
-    }
-
-    T size() const
-    {
-        return upper - lower;
+        return os << "[" << item[0] << ", " << item[1] << ")";
     }
 };
 
 template <class T, class U>
 bool operator==(const interval<T>& lhs, const interval<U>& rhs)
 {
-    return lhs.lower == rhs.lower && lhs.upper == rhs.upper;
+    return std::equal(std::begin(lhs), std::end(lhs), std::begin(rhs));
 }
 
 template <class T, class U>
@@ -46,15 +41,16 @@ bool operator!=(const interval<T>& lhs, const interval<U>& rhs)
 template <class T, class U, class = std::invoke_result_t<std::plus<>, T, U>>
 auto operator+=(interval<T>& lhs, U rhs) -> interval<T>&
 {
-    lhs.lower += rhs;
-    lhs.upper += rhs;
+    std::transform(std::begin(lhs), std::end(lhs), std::begin(lhs), std::bind(std::plus<>{}, std::placeholders::_1, rhs));
     return lhs;
 }
 
 template <class T, class U, class Res = std::invoke_result_t<std::plus<>, T, U>>
 auto operator+(const interval<T>& lhs, U rhs) -> interval<Res>
 {
-    return interval<Res>{ static_cast<Res>(lhs.lower + rhs), static_cast<Res>(lhs.upper + rhs) };
+    interval<Res> result{};
+    std::transform(std::begin(lhs), std::end(lhs), std::begin(result), std::bind(std::plus<>{}, std::placeholders::_1, rhs));
+    return result;
 }
 
 template <class T, class U, class Res = std::invoke_result_t<std::plus<>, T, U>>
@@ -66,29 +62,34 @@ auto operator+(T lhs, const interval<U>& rhs) -> interval<Res>
 template <class T, class U, class = std::invoke_result_t<std::minus<>, T, U>>
 auto operator-=(interval<T>& lhs, U rhs) -> interval<T>&
 {
-    lhs.lower -= rhs;
-    lhs.upper -= rhs;
+    std::transform(std::begin(lhs), std::end(lhs), std::begin(lhs), std::bind(std::minus<>{}, std::placeholders::_1, rhs));
     return lhs;
 }
 
 template <class T, class U, class Res = std::invoke_result_t<std::minus<>, T, U>>
 auto operator-(const interval<T>& lhs, U rhs) -> interval<Res>
 {
-    return interval<Res>{ static_cast<Res>(lhs.lower - rhs), static_cast<Res>(lhs.upper - rhs) };
+    interval<Res> result{};
+    std::transform(
+        std::begin(lhs), std::end(lhs), std::begin(result), std::bind(std::minus<>{}, std::placeholders::_1, rhs));
+    return result;
 }
 
 template <class T, class U, class = std::invoke_result_t<std::multiplies<>, T, U>>
 auto operator*=(interval<T>& lhs, U rhs) -> interval<T>&
 {
-    lhs.lower *= rhs;
-    lhs.upper *= rhs;
+    std::transform(
+        std::begin(lhs), std::end(lhs), std::begin(lhs), std::bind(std::multiplies<>{}, std::placeholders::_1, rhs));
     return lhs;
 }
 
 template <class T, class U, class Res = std::invoke_result_t<std::multiplies<>, T, U>>
 auto operator*(const interval<T>& lhs, U rhs) -> interval<Res>
 {
-    return interval<Res>{ static_cast<Res>(lhs.lower * rhs), static_cast<Res>(lhs.upper * rhs) };
+    interval<Res> result{};
+    std::transform(
+        std::begin(lhs), std::end(lhs), std::begin(result), std::bind(std::multiplies<>{}, std::placeholders::_1, rhs));
+    return result;
 }
 
 template <class T, class U, class Res = std::invoke_result_t<std::multiplies<>, T, U>>
@@ -100,15 +101,17 @@ auto operator*(T lhs, const interval<U>& rhs) -> interval<Res>
 template <class T, class U, class = std::invoke_result_t<std::divides<>, T, U>>
 auto operator/=(interval<T>& lhs, U rhs) -> interval<T>&
 {
-    lhs.lower /= rhs;
-    lhs.upper /= rhs;
+    std::transform(std::begin(lhs), std::end(lhs), std::begin(lhs), std::bind(std::divides<>{}, std::placeholders::_1, rhs));
     return lhs;
 }
 
 template <class T, class U, class Res = std::invoke_result_t<std::divides<>, T, U>>
 auto operator/(const interval<T>& lhs, U rhs) -> interval<Res>
 {
-    return interval<Res>{ static_cast<Res>(lhs.lower / rhs), static_cast<Res>(lhs.upper / rhs) };
+    interval<Res> result{};
+    std::transform(
+        std::begin(lhs), std::end(lhs), std::begin(result), std::bind(std::divides<>{}, std::placeholders::_1, rhs));
+    return result;
 }
 
 }  // namespace alg
