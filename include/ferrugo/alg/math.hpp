@@ -10,6 +10,24 @@ namespace alg
 namespace detail
 {
 
+struct sign_fn
+{
+    template <class T>
+    auto operator()(T v) const -> int
+    {
+        static const T zero = T{};
+        if (v > zero)
+        {
+            return +1;
+        }
+        else if (v < zero)
+        {
+            return -1;
+        }
+        return 0;
+    }
+};
+
 struct sqrt_fn
 {
     template <class T>
@@ -67,7 +85,7 @@ struct cos_fn
 struct atan2_fn
 {
     template <class T>
-    auto operator ()(T y, T x) const -> decltype(std::atan2(y, x))
+    auto operator()(T y, T x) const -> decltype(std::atan2(y, x))
     {
         return std::atan2(y, x);
     }
@@ -76,7 +94,7 @@ struct atan2_fn
 struct asin_fn
 {
     template <class T>
-    auto operator ()(T x) const -> decltype(std::asin(x))
+    auto operator()(T x) const -> decltype(std::asin(x))
     {
         return std::asin(x);
     }
@@ -85,12 +103,11 @@ struct asin_fn
 struct acos_fn
 {
     template <class T>
-    auto operator ()(T x) const -> decltype(std::acos(x))
+    auto operator()(T x) const -> decltype(std::acos(x))
     {
         return std::acos(x);
     }
 };
-
 
 }  // namespace detail
 
@@ -103,6 +120,7 @@ static constexpr inline auto cos = detail::cos_fn{};
 static constexpr inline auto atans = detail::atan2_fn{};
 static constexpr inline auto asin = detail::asin_fn{};
 static constexpr inline auto acos = detail::acos_fn{};
+static constexpr inline auto sign = detail::sign_fn{};
 
 }  // namespace alg
 }  // namespace ferrugo

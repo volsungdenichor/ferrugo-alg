@@ -2,6 +2,7 @@ set(TARGET_NAME ferrugo-alg-tests)
 
 set(UNIT_TEST_SOURCE_LIST
     matrix.test.cpp
+    operations.test.cpp
 )
 
 Include(FetchContent)
