@@ -70,7 +70,7 @@ static constexpr inline auto unit = unit_fn{};
 struct distance_fn
 {
     template <class T, class U, std::size_t D>
-    auto operator ()(const vector<T, D>& lhs, const vector<U, D>& rhs) const -> decltype(length(rhs - lhs))
+    auto operator()(const vector<T, D>& lhs, const vector<U, D>& rhs) const -> decltype(length(rhs - lhs))
     {
         return length(rhs - lhs);
     }
@@ -81,55 +81,34 @@ static constexpr inline auto distance = distance_fn{};
 struct cross_fn
 {
     template <class T, class U, class Res = std::invoke_result_t<std::multiplies<>, T, U>>
-    auto operator ()(const vector_2d<T>& lhs, const vector_2d<U>& rhs) const -> Res
+    auto operator()(const vector_2d<T>& lhs, const vector_2d<U>& rhs) const -> Res
     {
         return lhs[0] * rhs[1] - lhs[1] * rhs[0];
     }
 
     template <class T, class U, class Res = std::invoke_result_t<std::multiplies<>, T, U>>
-    auto operator ()(const vector_3d<T>& lhs, const vector_3d<U>& rhs) const -> vector<Res, 3>
+    auto operator()(const vector_3d<T>& lhs, const vector_3d<U>& rhs) const -> vector<Res, 3>
     {
-        return vector<Res, 3>{ {
-            lhs[1] * rhs[2] - lhs[2] * rhs[1],
-            lhs[2] * rhs[0] - lhs[0] * rhs[2],
-            lhs[0] * rhs[1] - lhs[1] * rhs[0] }};
+        return vector<Res, 3>{
+            { lhs[1] * rhs[2] - lhs[2] * rhs[1], lhs[2] * rhs[0] - lhs[0] * rhs[2], lhs[0] * rhs[1] - lhs[1] * rhs[0] }
+        };
     }
 };
 
 static constexpr inline auto cross = cross_fn{};
 
-struct projection_fn
-{
-    template <class T, std::size_t D>
-    auto operator ()(const vector<T, D>& lhs, const vector<T, D>& rhs) const -> decltype(rhs * (dot(rhs, lhs) / norm(rhs)))
-    {
-        return rhs * (dot(rhs, lhs) / norm(rhs));
-    }
-};
-
-static constexpr inline auto projection = projection_fn{};
-
-struct rejection_fn
-{
-    template <class T, std::size_t D>
-    auto operator ()(const vector<T, D>& lhs, const vector<T, D>& rhs) const -> decltype(lhs - projection(lhs, rhs))
-    {
-        return lhs - projection(lhs, rhs);
-    }
-};
-
-static constexpr inline auto rejection = rejection_fn{};
-
 struct angle_fn
 {
     template <class T>
-    auto operator ()(const vector_2d<T>& lhs, const vector_2d<T>& rhs) const -> decltype(atan2(cross(lhs, rhs), dot(lhs, rhs)))
+    auto operator()(const vector_2d<T>& lhs, const vector_2d<T>& rhs) const
+        -> decltype(atan2(cross(lhs, rhs), dot(lhs, rhs)))
     {
         return atan2(cross(lhs, rhs), dot(lhs, rhs));
     }
 
     template <class T>
-    auto operator ()(const vector_3d<T>& lhs, const vector_3d<T>& rhs) const -> decltype(acos(dot(lhs, rhs) / (length(lhs) * length(rhs))))
+    auto operator()(const vector_3d<T>& lhs, const vector_3d<T>& rhs) const
+        -> decltype(acos(dot(lhs, rhs) / (length(lhs) * length(rhs))))
     {
         return acos(dot(lhs, rhs) / (length(lhs) * length(rhs)));
     }
@@ -137,18 +116,15 @@ struct angle_fn
 
 static constexpr inline auto angle = angle_fn{};
 
-
 }  // namespace detail
 
+using detail::angle;
+using detail::cross;
+using detail::distance;
 using detail::dot;
 using detail::length;
 using detail::norm;
 using detail::unit;
-using detail::distance;
-using detail::cross;
-using detail::projection;
-using detail::rejection;
-using detail::angle;
 
 }  // namespace alg
 }  // namespace ferrugo

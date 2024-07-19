@@ -28,6 +28,15 @@ struct sign_fn
     }
 };
 
+struct sqr_fn
+{
+    template <class T>
+    auto operator()(T v) const -> std::invoke_result_t<std::multiplies<>, T, T>
+    {
+        return v * v;
+    }
+};
+
 struct sqrt_fn
 {
     template <class T>
@@ -111,6 +120,7 @@ struct acos_fn
 
 }  // namespace detail
 
+static constexpr inline auto sqr = detail::sqr_fn{};
 static constexpr inline auto sqrt = detail::sqrt_fn{};
 static constexpr inline auto abs = detail::abs_fn{};
 static constexpr inline auto floor = detail::floor_fn{};

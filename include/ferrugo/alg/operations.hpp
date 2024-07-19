@@ -5,6 +5,7 @@
 #include <ferrugo/alg/linear.hpp>
 #include <ferrugo/alg/polygon.hpp>
 #include <ferrugo/alg/region.hpp>
+#include <optional>
 
 namespace ferrugo
 {
@@ -12,6 +13,24 @@ namespace alg
 {
 namespace detail
 {
+
+template <class T>
+bool between(T v, T lo, T up)
+{
+    return lo <= v && v < up;
+}
+
+template <class T>
+bool inclusive_between(T v, T lo, T up)
+{
+    return lo <= v && v <= up;
+}
+
+template <class T, class E>
+auto approx_equal(T value, E epsilon)
+{
+    return [=](auto v) { return std::abs(v - value) < epsilon; };
+}
 
 template <std::size_t Dim>
 struct lower_upper_fn
@@ -99,7 +118,7 @@ struct contains_fn
     template <class T, class U>
     auto operator()(const interval<T>& item, U value) const -> bool
     {
-        return lower(item) <= value && value < upper(item);
+        return between(value, lower(item), upper(item));
     }
 
     template <class T>
@@ -107,7 +126,7 @@ struct contains_fn
     {
         const T lo = lower(item);
         const T up = upper(item);
-        return (lo <= other[0] && other[0] <= up) && (lo <= other[1] && other[1] <= up);
+        return inclusive_between(other[0], lo, up) && inclusive_between(other[1], lo, up);
     }
 
     template <class T, std::size_t D>
@@ -126,7 +145,7 @@ struct contains_fn
     template <class T, class U, std::size_t D>
     auto operator()(const circular_shape<T, D>& item, const vector<U, D>& other) const -> bool
     {
-        return norm(other - center(item)) <= (item.radius * item.radius);
+        return norm(other - center(item)) <= sqr(item.radius);
     }
 
     template <class T, class U>
@@ -152,50 +171,189 @@ struct intersects_fn
     template <class T>
     auto operator()(const interval<T>& self, const interval<T>& other) const -> bool
     {
-        static const auto inclusive_between = [](T lo, T up) { return [=](T v) { return lo <= v && v <= up; }; };
-        return /* TODO */ false;
+        return inclusive_between(self[0], lower(other), upper(other))     //
+               || inclusive_between(self[1], lower(other), upper(other))  //
+               || inclusive_between(other[0], lower(self), upper(self))   //
+               || inclusive_between(other[1], lower(self), upper(self));
+    }
+
+    template <class T, std::size_t D>
+    auto operator()(const region<T, D>& self, const region<T, D>& other) const -> bool
+    {
+        for (std::size_t d = 0; d < D; ++d)
+        {
+            if (!(*this)(self[d], other[d]))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 };
 
 static constexpr inline auto intersects = intersects_fn{};
 
-#if 0
+struct interpolate_fn
+{
+    template <class R, class T, std::size_t D>
+    auto operator()(R r, const vector<T, D>& lhs, const vector<T, D>& rhs) const -> vector<T, D>
+    {
+        return (lhs * r) + (rhs * (R(1) - r));
+    }
+
+    template <class R, class T, std::size_t D>
+    auto operator()(R r, const segment<T, D>& value) const
+    {
+        return (*this)(r, value[0], value[1]);
+    }
+
+    template <class R, class T>
+    auto operator()(R r, const interval<T>& item) const
+    {
+        return lower(item) * r + upper(item) * (R(1) - r);
+    }
+};
+
+static constexpr inline auto interpolate = interpolate_fn{};
+
+template <class T, class E>
+auto get_line_intersection_parameter(const vector<T, 2>& a0, const vector<T, 2>& a1, const vector<T, 2>& p, E epsilon)
+    -> std::optional<T>
+{
+    const auto dir = a1 - a0;
+
+    const auto d = p - a0;
+
+    const auto det = cross(dir, d);
+    if (approx_equal(E(0), epsilon)(det))
+    {
+        return {};
+    }
+
+    return dot(d, dir) / norm(dir);
+}
+
+template <class T, class E>
+auto get_line_intersection_parameters(
+    const vector<T, 2>& a0, const vector<T, 2>& a1, const vector<T, 2>& b0, const vector<T, 2>& b1, E epsilon)
+    -> std::optional<std::tuple<T, T>>
+{
+    const auto dir_a = a1 - a0;
+    const auto dir_b = b1 - b0;
+
+    const auto det = cross(dir_a, dir_b);
+    const auto v = b0 - a0;
+
+    if (approx_equal(E(0), epsilon)(det))
+    {
+        return {};
+    }
+
+    return { cross(v, dir_b) / det, cross(v, dir_a) / det };
+}
+
+template <class T>
+bool contains_param(line_tag, T)
+{
+    return true;
+}
+
+template <class T>
+bool contains_param(ray_tag, T v)
+{
+    return v >= T(0);
+}
+
+template <class T>
+bool contains_param(segment_tag, T v)
+{
+    return T(0) <= v && v <= T(1);
+}
 
 struct intersection_fn
 {
-    template <class T, size_t D, class Tag1, class Tag2, class E = T>
-    auto operator()(const linear_shape<T, D, Tag1>& lhs, const linear_shape<T, D, Tag2>& rhs, E epsilon = {}) const
-        -> core::optional<vector<T, D>>
+    template <class T, std::size_t D, class Tag1, class Tag2, class E = T>
+    auto operator()(const linear_shape<Tag1, T, D>& lhs, const linear_shape<Tag2, T, D>& rhs, E epsilon = {}) const
+        -> std::optional<vector<T, D>>
     {
-        using lhs_traits = linear_shape_traits<linear_shape<T, D, Tag1>>;
-        using rhs_traits = linear_shape_traits<linear_shape<T, D, Tag2>>;
+        const auto par = get_line_intersection_parameters(lhs[0], lhs[1], rhs[0], rhs[1], epsilon);
 
-        auto par = get_line_intersection_parameters(lhs[0], lhs[1], rhs[0], rhs[1], epsilon);
+        if (!par)
+        {
+            return {};
+        }
 
-        return par && lhs_traits::contains_parameter(std::get<0>(*par)) && rhs_traits::contains_parameter(std::get<1>(*par))
-                   ? interpolate(lhs[0], lhs[1], std::get<0>(*par))
-                   : core::optional<vector<T, D>>{ core::none };
+        const auto [a, b] = *par;
+
+        if (contains_param(Tag1{}, *a) && contains_param(Tag2{}, *b))
+        {
+            return interpolate(*a, lhs[0], lhs[1]);
+        }
+        return {};
     }
 };
 
 static constexpr inline auto intersection = intersection_fn{};
 
+struct projection_fn
+{
+    template <class T, std::size_t D>
+    auto operator()(const vector<T, D>& lhs, const vector<T, D>& rhs) const -> decltype(rhs * (dot(rhs, lhs) / norm(rhs)))
+    {
+        return rhs * (dot(rhs, lhs) / norm(rhs));
+    }
+
+    template <class T, std::size_t D, class Tag, class E = T>
+    auto operator()(const vector<T, D>& point, const linear_shape<Tag, T, D>& shape, E epsilon = {}) const
+        -> std::optional<vector<T, D>>
+    {
+        const auto p0 = shape[0];
+        const auto p1 = shape[1];
+
+        const auto result = p0 + (*this)(point - p0, p1 - p0);
+
+        const auto t = get_line_intersection_parameter(p0, p1, result, epsilon);
+
+        if (t && contains_param(Tag{}, *t))
+        {
+            return result;
+        }
+
+        return {};
+    }
+};
+
+static constexpr inline auto projection = projection_fn{};
+
+struct rejection_fn
+{
+    template <class T, std::size_t D>
+    auto operator()(const vector<T, D>& lhs, const vector<T, D>& rhs) const -> decltype(lhs - projection(lhs, rhs))
+    {
+        return lhs - projection(lhs, rhs);
+    }
+};
+
+static constexpr inline auto rejection = rejection_fn{};
+
 struct altitude_fn
 {
     template <typename T>
-    auto operator()(const triangle_2d<T>& value, size_t index) const -> segment_2d<T>
+    auto operator()(const triangle_2d<T>& value, std::size_t index) const -> segment_2d<T>
     {
         static const T epsilon = T(0.1);
 
-        auto v = value[(index + 0) % 3];
+        const auto v = value[(index + 0) % 3];
 
-        auto p = projection(v, make_line(value[(index + 1) % 3], value[(index + 2) % 3]), epsilon);
+        const auto p = projection(v, line_2d<T>{ value[(index + 1) % 3], value[(index + 2) % 3] }, epsilon);
 
         return { v, *p };
     }
 };
 
 static constexpr inline auto altitude = altitude_fn{};
+
+#if 0
 
 struct centroid_fn
 {
@@ -355,7 +513,7 @@ static constexpr inline auto perpendicular = perpendicular_fn{};
 
 }  // namespace detail
 
-// using detail::altitude;
+using detail::altitude;
 using detail::center;
 // using detail::centroid;
 // using detail::circumcenter;
@@ -370,6 +528,9 @@ using detail::lower;
 // using detail::orthocenter;
 // using detail::perpendicular;
 // using detail::projection;
+using detail::interpolate;
+using detail::projection;
+using detail::rejection;
 using detail::size;
 using detail::upper;
 
