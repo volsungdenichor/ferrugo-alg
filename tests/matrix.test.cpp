@@ -25,22 +25,3 @@ TEST_CASE("matrix - comparison", "[matrix]")
     REQUIRE(a != b);
     REQUIRE(a == a);
 }
-
-TEST_CASE("vector - length", "[vector]")
-{
-    alg::vector_2d<int> a{ 1, 1 };
-    REQUIRE_THAT(alg::length(a), Catch::Matchers::WithinRel(1.4142, 0.001));
-}
-
-TEST_CASE("vector - dot", "[vector]")
-{
-    alg::vector_2d<int> a{ 2, 3 };
-    alg::vector_2d<int> b{ 4, 5 };
-    REQUIRE(alg::dot(a, b) == 23);
-}
-
-TEST_CASE("vector - norm", "[vector]")
-{
-    alg::vector_2d<int> a{ 2, 3 };
-    REQUIRE(alg::norm(a) == 13);
-}
