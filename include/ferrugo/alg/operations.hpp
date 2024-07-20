@@ -1,8 +1,8 @@
 #pragma once
 
-#include <ferrugo/alg/circular.hpp>
+#include <ferrugo/alg/circular_shapes.hpp>
 #include <ferrugo/alg/interval.hpp>
-#include <ferrugo/alg/linear.hpp>
+#include <ferrugo/alg/linear_shapes.hpp>
 #include <ferrugo/alg/math.hpp>
 #include <ferrugo/alg/polygon.hpp>
 #include <ferrugo/alg/region.hpp>
