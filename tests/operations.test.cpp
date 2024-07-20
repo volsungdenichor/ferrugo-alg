@@ -11,10 +11,4 @@ TEST_CASE("region", "[operations]")
     REQUIRE(alg::upper(region) == alg::vector_2d<float>{ 5, 3 });
     REQUIRE(alg::size(region) == alg::vector_2d<float>{ 5, 2 });
     REQUIRE(alg::center(region) == alg::vector_2d<float>{ 2.5, 2 });
-
-    alg::triangle_2d<float> t{};
-    std::cout << alg::orthocenter(t) << std::endl;
-    std::cout << alg::centroid(t) << std::endl;
-    std::cout << alg::circumcenter(t) << std::endl;
-    std::cout << alg::incenter(t) << std::endl;
 }

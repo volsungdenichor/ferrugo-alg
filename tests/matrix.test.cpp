@@ -24,7 +24,7 @@ TEST_CASE("matrix - comparison", "[matrix]")
     REQUIRE(a != b);
     REQUIRE(a == a);
 
-    std::cout << alg::minor(alg::square_matrix_2d<int>{}, 0, 0) << std::endl;
-    std::cout << alg::determinant(alg::square_matrix_3d<int>{}) << std::endl;
-    std::cout << *alg::invert(alg::square_matrix_3d<int>{}) << std::endl;
+    std::cout << (alg::translation(1.F, 2.F) * alg::rotation(0.2F)) << std::endl;
+    // std::cout << alg::invert(alg::square_matrix_3d<int>{}).value() << std::endl;
+    // std::cout << alg::rotation(0.2F) << std::endl;
 }

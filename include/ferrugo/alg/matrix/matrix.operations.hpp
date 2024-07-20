@@ -44,19 +44,20 @@ static constexpr inline auto minor = minor_fn{};
 struct determinant_fn
 {
     template <class T>
-    auto operator()(const square_matrix<T, 1>& item) const
+    auto operator()(const square_matrix<T, 1>& item) const -> T
     {
         return get<0, 0>(item);
     }
 
     template <class T>
-    auto operator()(const square_matrix<T, 2>& item) const
+    auto operator()(const square_matrix<T, 2>& item) const -> decltype(std::declval<T>() * std::declval<T>())
     {
         return get<0, 0>(item) * get<1, 1>(item) - get<0, 1>(item) * get<1, 0>(item);
     }
 
     template <class T>
     auto operator()(const square_matrix<T, 3>& item) const
+        -> decltype(std::declval<T>() * std::declval<T>() * std::declval<T>())
     {
         // clang-format off
         return
