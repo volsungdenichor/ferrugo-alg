@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <array>
-#include <ferrugo/core/type_traits.hpp>
+#include <type_traits>
 
 namespace ferrugo
 {
@@ -120,20 +120,20 @@ public:
         return m_data.end();
     }
 
-    template <std::size_t R_ = R, std::size_t C_ = C, core::require<(R_ == 1 && C_ >= 1)> = 0>
+    template <std::size_t R_ = R, std::size_t C_ = C, class = std::enable_if_t<(R_ == 1 && C_ >= 1)>>
     constexpr const_reference x() const
     {
         return std::get<0>(m_data);
     }
 
-    template <std::size_t R_ = R, std::size_t C_ = C, core::require<(R_ == 1 && C_ >= 2)> = 0>
+    template <std::size_t R_ = R, std::size_t C_ = C, class = std::enable_if_t<(R_ == 1 && C_ >= 2)>>
     constexpr const_reference y() const
     {
         return std::get<1>(m_data);
     }
 
-    template <std::size_t R_ = R, std::size_t C_ = C, core::require<(R_ == 1 && C_ >= 3)> = 0>
-    constexpr const_reference y() const
+    template <std::size_t R_ = R, std::size_t C_ = C, class = std::enable_if_t<(R_ == 1 && C_ >= 3)>>
+    constexpr const_reference z() const
     {
         return std::get<2>(m_data);
     }

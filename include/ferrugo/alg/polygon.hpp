@@ -9,6 +9,7 @@ namespace alg
 template <class T, std::size_t D, std::size_t N>
 struct polygon_base : std::array<vector<T, D>, N>
 {
+    using base_t = std::array<vector<T, D>, N>;
 
     friend std::ostream& operator<<(std::ostream& os, const polygon_base& item)
     {
