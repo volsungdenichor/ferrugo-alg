@@ -13,16 +13,16 @@ struct region : std::array<interval<T>, D>
 
     friend std::ostream& operator<<(std::ostream& os, const region& item)
     {
-        os << "{";
+        os << "(";
         for (std::size_t d = 0; d < D; ++d)
         {
             if (d != 0)
             {
-                os << ", ";
+                os << " ";
             }
             os << item[d];
         }
-        os << "}";
+        os << ")";
         return os;
     }
 };
