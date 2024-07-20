@@ -24,4 +24,8 @@ TEST_CASE("matrix - comparison", "[matrix]")
     alg::vector_2d<int> b{ 3, 3 };
     REQUIRE(a != b);
     REQUIRE(a == a);
+
+    std::cout << alg::minor(alg::square_matrix_2d<int>{}, 0, 0) << std::endl;
+    std::cout << alg::determinant(alg::square_matrix_3d<int>{}) << std::endl;
+    std::cout << *alg::invert(alg::square_matrix_3d<int>{}) << std::endl;
 }

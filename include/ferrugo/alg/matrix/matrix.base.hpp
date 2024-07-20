@@ -212,6 +212,12 @@ constexpr auto get(const matrix<T, R, C>& m) -> typename matrix<T, R, C>::const_
     return std::get<Index>(m.m_data);
 }
 
+template <std::size_t Row, std::size_t Col, class T, std::size_t R, std::size_t C>
+constexpr auto get(const matrix<T, R, C>& m) -> typename matrix<T, R, C>::const_reference
+{
+    return std::get<Row * C + Col>(m.m_data);
+}
+
 }  // namespace alg
 }  // namespace ferrugo
 
