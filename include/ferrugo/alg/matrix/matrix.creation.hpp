@@ -64,7 +64,7 @@ struct scale_fn
         return result;
     }
 
-    template <class T>
+    template <class T>  
     square_matrix_2d<T> operator()(T x, T y) const
     {
         return (*this)(vector_2d<T>{ x, y });

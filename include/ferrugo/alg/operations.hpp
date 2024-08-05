@@ -243,7 +243,7 @@ struct contains_fn
     {
         const T lo = lower(item);
         const T up = upper(item);
-        return inclusive_between(other[0], lo, up) && inclusive_between(other[1], lo, up);
+        return inclusive_between(lower(other), lo, up) && inclusive_between(upper(other), lo, up);
     }
 
     template <class T, std::size_t D>
@@ -288,10 +288,10 @@ struct intersects_fn
     template <class T>
     auto operator()(const interval<T>& self, const interval<T>& other) const -> bool
     {
-        return inclusive_between(self[0], lower(other), upper(other))     //
-               || inclusive_between(self[1], lower(other), upper(other))  //
-               || inclusive_between(other[0], lower(self), upper(self))   //
-               || inclusive_between(other[1], lower(self), upper(self));
+        return inclusive_between(lower(self), lower(other), upper(other))     //
+               || inclusive_between(upper(self), lower(other), upper(other))  //
+               || inclusive_between(lower(other), lower(self), upper(self))   //
+               || inclusive_between(upper(other), lower(self), upper(self));
     }
 
     template <class T, std::size_t D>
@@ -579,7 +579,7 @@ struct circumcircle_fn
     auto operator()(const triangle_2d<T>& triangle) const -> circle_2d<T>
     {
         const auto center = circumcenter(triangle);
-        auto radius = distance(center, triangle[0]);
+        const auto radius = distance(center, triangle[0]);
 
         return circle<T>{ center, radius };
     }

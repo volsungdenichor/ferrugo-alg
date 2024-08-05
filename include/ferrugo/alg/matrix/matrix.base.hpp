@@ -230,6 +230,18 @@ constexpr auto get(matrix<T, R, C>& m) -> typename matrix<T, R, C>::reference
     return std::get<Row * C + Col>(m.m_data);
 }
 
+template <class T>
+constexpr auto vec(T x, T y) -> vector<T, 2>
+{
+    return vector<T, 2>{ x, y };
+}
+
+template <class T>
+constexpr auto vec(T x, T y, T z) -> vector<T, 3>
+{
+    return vector<T, 3>{ x, y, z };
+}
+
 }  // namespace alg
 }  // namespace ferrugo
 
