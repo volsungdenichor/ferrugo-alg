@@ -21,11 +21,11 @@ TEST_CASE("region operations", "[operators]")
 
 TEST_CASE("segment operations", "[operators]")
 {
-    const auto seg = alg::segment_2d<float>{ alg::vec(0.F, 5.F), alg::vec(1.F, 3.F) };
-    std::cout << (seg + alg::vec(10, 10)) << std::endl;
-    std::cout << (seg - alg::vec(10, 10)) << std::endl;
-    std::cout << (seg * alg::rotation(10.F)) << std::endl;
-    std::cout << (alg::rotation(10.F) * seg) << std::endl;
+    const auto shape = alg::segment_2d<float>{ alg::vec(0.F, 5.F), alg::vec(1.F, 3.F) };
+    std::cout << (shape + alg::vec(10, 10)) << std::endl;
+    std::cout << (shape - alg::vec(10, 10)) << std::endl;
+    std::cout << (shape * alg::rotation(0.1F)) << std::endl;
+    std::cout << (alg::rotation(0.1F) * shape) << std::endl;
 }
 
 TEST_CASE("triangle operations", "[operators]")
@@ -35,4 +35,11 @@ TEST_CASE("triangle operations", "[operators]")
     std::cout << (shape - alg::vec(10, 10)) << std::endl;
     std::cout << (shape * alg::rotation(0.1F)) << std::endl;
     std::cout << (alg::rotation(0.1F) * shape) << std::endl;
+}
+
+TEST_CASE("circle operations", "[operators]")
+{
+    const auto shape = alg::circle_2d<float>{ alg::vec(0.F, 5.F), 10.F };
+    std::cout << (shape + alg::vec(10, 10)) << std::endl;
+    std::cout << (shape - alg::vec(10, 10)) << std::endl;
 }
