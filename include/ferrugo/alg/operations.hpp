@@ -173,6 +173,61 @@ struct lower_upper_fn
 static constexpr inline auto lower = lower_upper_fn<0>{};
 static constexpr inline auto upper = lower_upper_fn<1>{};
 
+struct min_fn
+{
+    template <class T>
+    auto operator()(const interval<T>& item) const -> T
+    {
+        return item[0];
+    }
+
+    template <class T, std::size_t D>
+    auto operator()(const region<T, D>& item) const -> vector<T, D>
+    {
+        vector<T, D> result{ raw };
+        for (std::size_t d = 0; d < D; ++d)
+        {
+            result[d] = (*this)(item[d]);
+        }
+        return result;
+    }
+};
+
+struct max_fn
+{
+    template <class T, std::enable_if_t<std::is_integral_v<T>, int> = 0>
+    static T step()
+    {
+        return T(1);
+    }
+
+    template <class T, std::enable_if_t<!std::is_integral_v<T>, int> = 0>
+    static T step()
+    {
+        return std::numeric_limits<T>::epsilon();
+    }
+
+    template <class T>
+    auto operator()(const interval<T>& item) const -> T
+    {
+        return item[1] - step<T>();
+    }
+
+    template <class T, std::size_t D>
+    auto operator()(const region<T, D>& item) const -> vector<T, D>
+    {
+        vector<T, D> result{ raw };
+        for (std::size_t d = 0; d < D; ++d)
+        {
+            result[d] = (*this)(item[d]);
+        }
+        return result;
+    }
+};
+
+static constexpr inline auto min = min_fn{};
+static constexpr inline auto max = max_fn{};
+
 struct size_fn
 {
     template <class T>
@@ -606,6 +661,8 @@ using detail::intersection;
 using detail::intersects;
 using detail::length;
 using detail::lower;
+using detail::max;
+using detail::min;
 using detail::norm;
 using detail::orthocenter;
 using detail::perpendicular;

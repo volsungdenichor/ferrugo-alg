@@ -11,12 +11,11 @@ TEST_CASE("region", "[operations]")
     REQUIRE(alg::upper(region) == alg::vector_2d<float>{ 5, 3 });
     REQUIRE(alg::size(region) == alg::vector_2d<float>{ 5, 2 });
     REQUIRE(alg::center(region) == alg::vector_2d<float>{ 2.5, 2 });
-}
+    REQUIRE(alg::min(region) == alg::vector_2d<float>{ 0.F, 1.F });
+    REQUIRE(alg::max(region) == alg::vector_2d<float>{ 5.F, 3.F });
 
-TEST_CASE("region operations", "[operators]")
-{
-    const auto region = alg::region_2d<float>{ alg::interval<float>{ 0, 5 }, alg::interval<float>{ 1, 3 } };
-    REQUIRE(region - alg::vector_2d<float>{ 1, 5 } == alg::region_2d<float>{});
+    const auto r = alg::region_2d<int>{ alg::interval<int>{ 0, 320 }, alg::interval<int>{ 0, 200 } };
+    REQUIRE(alg::max(r) == alg::vector_2d<int>{ 319, 199 });
 }
 
 TEST_CASE("segment operations", "[operators]")
