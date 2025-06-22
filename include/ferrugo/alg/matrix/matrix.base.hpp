@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <iostream>
 #include <type_traits>
 
 namespace ferrugo
