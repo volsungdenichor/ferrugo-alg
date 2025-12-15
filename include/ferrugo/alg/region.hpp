@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ferrugo/alg/interval.hpp>
+#include <ferrugo/alg/matrix.hpp>
 
 namespace ferrugo
 {
@@ -31,7 +32,7 @@ template <class T>
 using region_2d = region<T, 2>;
 
 template <class T>
-using region_3d = region<T, 2>;
+using region_3d = region<T, 3>;
 
 template <class T>
 using rect = region_2d<T>;
